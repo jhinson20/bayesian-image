@@ -1,8 +1,11 @@
 import tkinter as tk
 import random
+import pandas
 
 ##FF4500 orange
 ##00BAFF blue
+#Dot = 0
+#Line = 1
 
 def togglePixel(m):
     row = int(m[:m.index(',')])
@@ -19,9 +22,9 @@ def shapePress():
 
     shapeCanvas.delete("all")
     if randInt == 0:
-        createTriangle()
+        createDot()
     else:
-        createSquare()
+        createLine()
 
 def clearGrid():
     shapeCanvas.delete("all")
@@ -30,19 +33,42 @@ def clearGrid():
                 matrix[i][j] = 0
                 buttons[i][j].config(bg="grey")
 
-def createTriangle():
-    shapeCanvas.create_polygon(150, 0, 0, 300, 300, 300, fill=_blue)
+def createDot():
+    shapeCanvas.create_rectangle(125, 125, 175, 175, fill=_blue)
 
-def createSquare():
-    shapeCanvas.create_rectangle(0, 0, 300, 300, fill=_blue)
+def createLine():
+    shapeCanvas.create_rectangle(0, 125, 300, 175, fill=_blue)
+
+def saveDot():
+    nodes = []
+    nodeVals = []
+    i = 0
+    for row in matrix:
+        for val in row:
+            nodes.append("x" + str(i))
+            nodeVals.append(val)
+            i+=1
+        i += 1
+
+    dot = {
+        'shape': 0,
+        'nodes': nodes,
+        'values': nodeVals
+    }
+    print(dot)
+    print("save dot")
+
+def saveLine():
+    print("save line")
 
 _orange = "#FF4500"
 _blue = "#00BAFF"
 
-numberRows = 5
-numberCols = 5
+numberRows = 2
+numberCols = 2
+
 window = tk.Tk()
-window.title("Shapes")
+window.title("Dots and Lines")
 window.geometry("500x400")
 window.minsize(height=600, width= 700)
 leftFrame = tk.Frame(window, bg=_orange)
@@ -70,10 +96,16 @@ shapeCanvas.pack()
 
 shapeButton = tk.Button(optionsFrame, text="Shape", command=shapePress)
 clearButton = tk.Button(optionsFrame, text="Clear", command=clearGrid)
+dotButton = tk.Button(optionsFrame, text="Save Dot", command=saveDot)
+lineButton = tk.Button(optionsFrame, text="Save Line", command=saveLine)
 optionsFrame.grid_columnconfigure(0, weight=1)
 optionsFrame.grid_columnconfigure(1, weight=1)
+optionsFrame.grid_columnconfigure(2, weight=1)
+optionsFrame.grid_columnconfigure(3, weight=1)
 shapeButton.grid(row=0, column=0)
 clearButton.grid(row=0, column=1)
+dotButton.grid(row=0, column=2)
+lineButton.grid(row=0, column=3)
 
 for i in range(len(buttons)):
     for j in range(len(buttons[0])):
