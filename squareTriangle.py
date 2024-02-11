@@ -1,8 +1,12 @@
 import tkinter as tk
 import random
+import pandas as pd
+import os
 
 ##FF4500 orange
 ##00BAFF blue
+#Square = 0
+#Triangle = 1
 
 def togglePixel(m):
     row = int(m[:m.index(',')])
@@ -35,6 +39,32 @@ def createTriangle():
 
 def createSquare():
     shapeCanvas.create_rectangle(0, 0, 300, 300, fill=_blue)
+
+def saveShape(s):
+    nodes = []
+
+    for row in matrix:
+        for val in row:
+            nodes.append(val)
+
+    dot = {
+        'shape': [s]
+    }
+
+    dataFrame = pd.DataFrame(dot)
+
+    nodeNames = list("x" + str(i) for i in range(len(nodes)))
+
+    for i in range(len(nodes)):
+        dataFrame[nodeNames[i]] = [nodes[i]]
+
+    fileName = 'data/squareTriangle.csv'
+
+    if os.path.isfile(fileName):
+        dataFrame.to_csv(fileName, index=False, header=False, mode='a')
+    else:
+        dataFrame.to_csv(fileName, index=False, header=True, mode='a')
+
 
 _orange = "#FF4500"
 _blue = "#00BAFF"
@@ -70,10 +100,16 @@ shapeCanvas.pack()
 
 shapeButton = tk.Button(optionsFrame, text="Shape", command=shapePress)
 clearButton = tk.Button(optionsFrame, text="Clear", command=clearGrid)
+squareButton = tk.Button(optionsFrame, text="Save Square", command=lambda m=0: saveShape(m))
+triangleButton = tk.Button(optionsFrame, text="Save Triangle", command=lambda m=1: saveShape(m))
 optionsFrame.grid_columnconfigure(0, weight=1)
 optionsFrame.grid_columnconfigure(1, weight=1)
+optionsFrame.grid_columnconfigure(2, weight=1)
+optionsFrame.grid_columnconfigure(3, weight=1)
 shapeButton.grid(row=0, column=0)
 clearButton.grid(row=0, column=1)
+squareButton.grid(row=0, column=2)
+triangleButton.grid(row=0, column=3)
 
 for i in range(len(buttons)):
     for j in range(len(buttons[0])):

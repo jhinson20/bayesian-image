@@ -1,6 +1,7 @@
 import tkinter as tk
 import random
 import pandas as pd
+import os
 
 ##FF4500 orange
 ##00BAFF blue
@@ -56,7 +57,15 @@ def saveShape(s):
 
     for i in range(len(nodes)):
         dataFrame[nodeNames[i]] = [nodes[i]]
-    print(dataFrame)
+
+    fileName = 'data/dotLine.csv'
+
+    if os.path.isfile(fileName):
+        dataFrame.to_csv(fileName, index=False, header=False, mode='a')
+    else:
+        dataFrame.to_csv(fileName, index=False, header=True, mode='a')
+
+    
 
 _orange = "#FF4500"
 _blue = "#00BAFF"
@@ -67,7 +76,7 @@ numberCols = 2
 window = tk.Tk()
 window.title("Dots and Lines")
 window.geometry("500x400")
-window.minsize(height=600, width= 700)
+window.minsize(height=600, width= 750)
 leftFrame = tk.Frame(window, bg=_orange)
 leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 rightFrame = tk.Frame(window)
