@@ -39,7 +39,7 @@ def createDot():
 def createLine():
     shapeCanvas.create_rectangle(0, 125, 300, 175, fill=_blue)
 
-def saveDot():
+def saveShape(s):
     nodes = []
 
     for row in matrix:
@@ -47,20 +47,16 @@ def saveDot():
             nodes.append(val)
 
     dot = {
-        'shape': 0,
+        'shape': [s]
     }
 
-    i = 0
-    for node in nodes:
-        series = pd.Series(node, index = ["x" + str(i)])
-        pd.concat([dot, series.to_frame()], axis=1)
-        i += 1    
-    
-    print(dot)
-    print("save dot")
+    dataFrame = pd.DataFrame(dot)
 
-def saveLine():
-    print("save line")
+    nodeNames = list("x" + str(i) for i in range(len(nodes)))
+
+    for i in range(len(nodes)):
+        dataFrame[nodeNames[i]] = [nodes[i]]
+    print(dataFrame)
 
 _orange = "#FF4500"
 _blue = "#00BAFF"
@@ -97,8 +93,8 @@ shapeCanvas.pack()
 
 shapeButton = tk.Button(optionsFrame, text="Shape", command=shapePress)
 clearButton = tk.Button(optionsFrame, text="Clear", command=clearGrid)
-dotButton = tk.Button(optionsFrame, text="Save Dot", command=saveDot)
-lineButton = tk.Button(optionsFrame, text="Save Line", command=saveLine)
+dotButton = tk.Button(optionsFrame, text="Save Dot", command=lambda m=0: saveShape(m))
+lineButton = tk.Button(optionsFrame, text="Save Line", command=lambda m=1: saveShape(m))
 optionsFrame.grid_columnconfigure(0, weight=1)
 optionsFrame.grid_columnconfigure(1, weight=1)
 optionsFrame.grid_columnconfigure(2, weight=1)
