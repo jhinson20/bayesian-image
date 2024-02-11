@@ -1,6 +1,6 @@
 import tkinter as tk
 import random
-import pandas
+import pandas as pd
 
 ##FF4500 orange
 ##00BAFF blue
@@ -41,20 +41,21 @@ def createLine():
 
 def saveDot():
     nodes = []
-    nodeVals = []
-    i = 0
+
     for row in matrix:
         for val in row:
-            nodes.append("x" + str(i))
-            nodeVals.append(val)
-            i+=1
-        i += 1
+            nodes.append(val)
 
     dot = {
         'shape': 0,
-        'nodes': nodes,
-        'values': nodeVals
     }
+
+    i = 0
+    for node in nodes:
+        series = pd.Series(node, index = ["x" + str(i)])
+        pd.concat([dot, series.to_frame()], axis=1)
+        i += 1    
+    
     print(dot)
     print("save dot")
 
