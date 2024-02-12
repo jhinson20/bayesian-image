@@ -74,7 +74,7 @@ numberCols = 5
 window = tk.Tk()
 window.title("Squares and Triangles")
 window.geometry("500x400")
-window.minsize(height=600, width= 700)
+window.minsize(height=600, width= 850)
 leftFrame = tk.Frame(window, bg=_orange)
 leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 rightFrame = tk.Frame(window)
