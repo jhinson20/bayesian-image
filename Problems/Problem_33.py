@@ -29,6 +29,7 @@ infer = VariableElimination(graph)
 query1 = infer.query(variables = ["J"], evidence= {'B':1})
 print(query1)
 
-#This is for P(S|B')
+#This is for P(J|B')
 query2 = infer.query(variables = ["J"], evidence= {'B':0})
 print(query2)
+print(type(query2))
