@@ -2,6 +2,8 @@ import tkinter as tk
 import random
 import pandas as pd
 import os
+from pgmpy.models import BayesianNetwork
+from pgmpy.inference import VariableElimination
 
 ##FF4500 orange
 ##00BAFF blue
@@ -19,10 +21,10 @@ def togglePixel(m):
         buttons[row][col].config(bg=_orange)
 
 def shapePress():
-    randInt = random.randint(0, 1)
+    shape = determineShape()
 
     shapeCanvas.delete("all")
-    if randInt == 0:
+    if shape == 0:
         createDot()
     else:
         createLine()
@@ -65,6 +67,38 @@ def saveShape(s):
     else:
         dataFrame.to_csv(fileName, index=False, header=True, mode='a')
 
+def determineShape():
+    fileName = 'data/dotLine.csv'
+
+    data = pd.read_csv(fileName)
+
+    edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
+
+    graph = BayesianNetwork(edges)
+    graph.fit(data)
+
+    infer = VariableElimination(graph)
+
+    nodes = []
+
+    for row in matrix:
+        for val in row:
+            nodes.append(val)
+
+    evidenceDict = {}
+
+    nodeNames = list("x" + str(i) for i in range(len(nodes)))
+
+    for i in range(len(nodes)):
+        evidenceDict[nodeNames[i]] = nodes[i]
+
+    #Gives the probability that the shape is what is says it is
+    probability = infer.max_marginal(variables = ["shape"], evidence= evidenceDict)
+    shape = str(infer.map_query(variables = ["shape"], evidence= evidenceDict))
+
+    shape = int(shape[shape.find(':') + 1 : shape.rfind('}')].strip())
+
+    return shape
     
 
 _orange = "#FF4500"
