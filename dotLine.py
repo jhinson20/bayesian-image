@@ -68,17 +68,6 @@ def saveShape(s):
         dataFrame.to_csv(fileName, index=False, header=True, mode='a')
 
 def determineShape():
-    fileName = 'data/dotLine.csv'
-
-    data = pd.read_csv(fileName)
-
-    edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
-
-    graph = BayesianNetwork(edges)
-    graph.fit(data)
-
-    infer = VariableElimination(graph)
-
     nodes = []
 
     for row in matrix:
@@ -152,5 +141,16 @@ for i in range(len(buttons)):
         rowCol = str(i) + ',' + str(j)
         buttons[i][j] = tk.Button(buttonFrame, command=lambda m=rowCol: togglePixel(m), height=2, width=5, bg="grey")
         buttons[i][j].grid(column=j,row=i, pady=10, padx=10)
+
+fileName = 'data/dotLine.csv'
+
+data = pd.read_csv(fileName)
+
+edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
+
+graph = BayesianNetwork(edges)
+graph.fit(data)
+
+infer = VariableElimination(graph)
 
 window.mainloop()
