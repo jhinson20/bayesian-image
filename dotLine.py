@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from pgmpy.models import BayesianNetwork
 from pgmpy.inference import VariableElimination
+from pgmpy.factors.discrete.CPD import TabularCPD
 
 ##FF4500 orange
 ##00BAFF blue
@@ -150,7 +151,11 @@ edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 
 graph = BayesianNetwork(edges)
 graph.fit(data)
+shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
+graph.add_cpds(shape_cpd)
 
 infer = VariableElimination(graph)
+
+#print(infer.query(variables = ["shape"]))
 
 window.mainloop()
