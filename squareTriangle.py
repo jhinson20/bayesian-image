@@ -7,6 +7,7 @@ import os
 ##00BAFF blue
 #Square = 0
 #Triangle = 1
+#Shapes are assumed to be hollow
 
 def togglePixel(m):
     row = int(m[:m.index(',')])
@@ -69,30 +70,30 @@ def saveShape(s):
 _orange = "#FF4500"
 _blue = "#00BAFF"
 
-numberRows = 5
-numberCols = 5
+numberRows = 10
+numberCols = 10
 window = tk.Tk()
 window.title("Squares and Triangles")
 window.geometry("500x400")
 window.minsize(height=600, width= 850)
-leftFrame = tk.Frame(window, bg=_orange)
-leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-rightFrame = tk.Frame(window)
+rightFrame = tk.Frame(window, bg=_orange, width=200)
 rightFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-rightFrame.grid_rowconfigure(0, weight=1)
-rightFrame.grid_rowconfigure(0, weight=1)
-buttonFrame = tk.Frame(rightFrame, width=300, height=200)
+leftFrame = tk.Frame(window)
+leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+leftFrame.grid_rowconfigure(0, weight=1)
+leftFrame.grid_rowconfigure(0, weight=1)
+buttonFrame = tk.Frame(leftFrame, width=300, height=200)
 buttonFrame.columnconfigure(0, weight=1)
 buttonFrame.columnconfigure(1, weight=1)
 buttonFrame.columnconfigure(2, weight=1)
 buttonFrame.columnconfigure(3, weight=1)
-buttonFrame.place(in_=rightFrame, anchor="c", relx=.5, rely=.5)
-shapeFrame = tk.Frame(leftFrame, bg=_orange, width=300, height=300)
-shapeFrame.place(in_=leftFrame, anchor="c", relx=.5, rely=.5)
+buttonFrame.place(in_=leftFrame, anchor="c", relx=.5, rely=.5)
+shapeFrame = tk.Frame(rightFrame, bg=_orange, width=300, height=300)
+shapeFrame.place(in_=rightFrame, anchor="c", relx=.5, rely=.5)
 buttons = [[0 for x in range(numberRows)] for y in range(numberCols)]
 matrix = [[0 for x in range(numberRows)] for y in range(numberCols)]
 
-optionsFrame = tk.Frame(rightFrame, height=70)
+optionsFrame = tk.Frame(leftFrame, height=70)
 optionsFrame.pack(side="bottom", fill='x', pady=20)
 
 shapeCanvas = tk.Canvas(shapeFrame, width=300, height=300, bg=_orange, highlightthickness=0)
@@ -114,7 +115,7 @@ triangleButton.grid(row=0, column=3)
 for i in range(len(buttons)):
     for j in range(len(buttons[0])):
         rowCol = str(i) + ',' + str(j)
-        buttons[i][j] = tk.Button(buttonFrame, command=lambda m=rowCol: togglePixel(m), height=2, width=5, bg="grey")
-        buttons[i][j].grid(column=j,row=i, pady=10, padx=10)
+        buttons[i][j] = tk.Button(buttonFrame, command=lambda m=rowCol: togglePixel(m), height=1, width=3, bg="grey")
+        buttons[i][j].grid(column=j,row=i, pady=5, padx=5)
 
 window.mainloop()
