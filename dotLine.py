@@ -21,8 +21,8 @@ def togglePixel(m):
         buttons[row][col].config(bg=_orange)
 
 def shapePress():
-    shape = determineShape()
-    updateProbabilites()
+    shape, probability = determineShape()
+    updateProbabilites(shape, probability)
 
     shapeCanvas.delete("all")
     if shape == 0:
@@ -30,12 +30,23 @@ def shapePress():
     else:
         createLine()
 
-def updateProbabilites():
-    dotProbability.config(text="new_text")
-    lineProbability.config(text="s")
+def updateProbabilites(shape, probability):
+    higherPercentage = str(round(probability*100, 2)) + "%"
+    lowerPercentage = str(round((1 - probability)*100, 2)) + "%"
+
+    if shape == 0:
+        dotProbability.config(text=higherPercentage)
+        lineProbability.config(text=lowerPercentage)
+    else:
+        dotProbability.config(text=lowerPercentage)
+        lineProbability.config(text=higherPercentage)
+
+
 
 def clearGrid():
     shapeCanvas.delete("all")
+    dotProbability.config(text="0%")
+    lineProbability.config(text="0%")
     for i in range(len(buttons)):
         for j in range(len(buttons[0])):
                 matrix[i][j] = 0
@@ -89,13 +100,12 @@ def determineShape():
     #Gives the probability that the shape is what is says it is
     probability = infer.max_marginal(variables = ["shape"], evidence= evidenceDict)
 
-    print(probability)
-
     shape = str(infer.map_query(variables = ["shape"], evidence= evidenceDict))
+    print(shape)
 
     shape = int(shape[shape.find(':') + 1 : shape.rfind('}')].strip())
 
-    return shape
+    return shape, probability
     
 
 _orange = "#FF4500"
