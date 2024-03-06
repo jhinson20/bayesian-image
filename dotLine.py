@@ -1,5 +1,4 @@
 import tkinter as tk
-import random
 import pandas as pd
 import os
 from pgmpy.models import BayesianNetwork
@@ -23,12 +22,17 @@ def togglePixel(m):
 
 def shapePress():
     shape = determineShape()
+    updateProbabilites()
 
     shapeCanvas.delete("all")
     if shape == 0:
         createDot()
     else:
         createLine()
+
+def updateProbabilites():
+    dotProbability.config(text="new_text")
+    lineProbability.config(text="s")
 
 def clearGrid():
     shapeCanvas.delete("all")
@@ -84,6 +88,9 @@ def determineShape():
 
     #Gives the probability that the shape is what is says it is
     probability = infer.max_marginal(variables = ["shape"], evidence= evidenceDict)
+
+    print(probability)
+
     shape = str(infer.map_query(variables = ["shape"], evidence= evidenceDict))
 
     shape = int(shape[shape.find(':') + 1 : shape.rfind('}')].strip())
@@ -97,32 +104,32 @@ _blue = "#00BAFF"
 numberRows = 2
 numberCols = 2
 
+matrix = [[0 for x in range(numberRows)] for y in range(numberCols)]
+
+#Creates the window and sets min size
 window = tk.Tk()
 window.title("Dots and Lines")
 window.geometry("500x400")
 window.minsize(height=600, width= 750)
-leftFrame = tk.Frame(window, bg=_orange)
-leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-rightFrame = tk.Frame(window)
+
+#Creates left and right frames the window will be split by
+rightFrame = tk.Frame(window, bg=_orange, width=400)
 rightFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-rightFrame.grid_rowconfigure(0, weight=1)
-rightFrame.grid_rowconfigure(0, weight=1)
-buttonFrame = tk.Frame(rightFrame, width=300, height=200)
+leftFrame = tk.Frame(window)
+leftFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+leftFrame.grid_rowconfigure(0, weight=1)
+
+#Creates elements within the left frame
+buttonFrame = tk.Frame(leftFrame, height=200)
 buttonFrame.columnconfigure(0, weight=1)
 buttonFrame.columnconfigure(1, weight=1)
 buttonFrame.columnconfigure(2, weight=1)
 buttonFrame.columnconfigure(3, weight=1)
-buttonFrame.place(in_=rightFrame, anchor="c", relx=.5, rely=.5)
-shapeFrame = tk.Frame(leftFrame, bg=_orange, width=300, height=300)
-shapeFrame.place(in_=leftFrame, anchor="c", relx=.5, rely=.5)
+buttonFrame.place(in_=leftFrame, anchor="c", relx=.5, rely=.5)
 buttons = [[0 for x in range(numberRows)] for y in range(numberCols)]
-matrix = [[0 for x in range(numberRows)] for y in range(numberCols)]
 
-optionsFrame = tk.Frame(rightFrame, height=70)
+optionsFrame = tk.Frame(leftFrame, height=70)
 optionsFrame.pack(side="bottom", fill='x', pady=20)
-
-shapeCanvas = tk.Canvas(shapeFrame, width=300, height=300, bg=_orange, highlightthickness=0)
-shapeCanvas.pack()
 
 shapeButton = tk.Button(optionsFrame, text="Shape", command=shapePress)
 clearButton = tk.Button(optionsFrame, text="Clear", command=clearGrid)
@@ -143,10 +150,35 @@ for i in range(len(buttons)):
         buttons[i][j] = tk.Button(buttonFrame, command=lambda m=rowCol: togglePixel(m), height=2, width=5, bg="grey")
         buttons[i][j].grid(column=j,row=i, pady=10, padx=10)
 
+#Creates elements in the right frame
+shapeFrame = tk.Frame(rightFrame, bg=_orange, width=100)
+shapeFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+shapeOutline = tk.Frame(shapeFrame, bg=_orange, height=300, width=90)
+#shapeOutline = tk.Frame(shapeFrame, bg=_blue, height=300, width=90)
+shapeOutline.place(in_=shapeFrame, anchor="c", relx=.5, rely=.5, relwidth=0.95)
+shapeCanvas = tk.Canvas(shapeOutline, width=300, height=300, bg=_orange, highlightthickness=0)
+shapeCanvas.pack()
+
+probabilityFrame = tk.Frame(rightFrame, bg=_blue, width=100)
+probabilityFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+topFrame = tk.Frame(probabilityFrame, bg=_blue, height=100, width=100)
+topFrame.grid(row=0, column=0, sticky="nsew")
+bottomFrame = tk.Frame(probabilityFrame, bg=_blue, height=100, width=100)
+bottomFrame.grid(row=1, column=0, sticky="nsew")
+probabilityFrame.columnconfigure(0, weight=1)  
+probabilityFrame.rowconfigure(0, weight=1)     
+probabilityFrame.rowconfigure(1, weight=1)
+dotProbability = tk.Label(topFrame, text="0%", bg=_blue)
+dotProbability.place(relx=0.5, rely=.1)
+lineProbability = tk.Label(bottomFrame, text="0%", bg=_blue)
+lineProbability.place(relx=0.5, rely=.1)
+
+#Creates file object
 fileName = 'data/dotLine.csv'
 
 data = pd.read_csv(fileName)
 
+#Creates the bayesian network
 edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 
 graph = BayesianNetwork(edges)
