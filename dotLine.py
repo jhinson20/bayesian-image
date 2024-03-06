@@ -110,7 +110,7 @@ matrix = [[0 for x in range(numberRows)] for y in range(numberCols)]
 window = tk.Tk()
 window.title("Dots and Lines")
 window.geometry("500x400")
-window.minsize(height=600, width= 750)
+window.minsize(height=600, width= 1200)
 
 #Creates left and right frames the window will be split by
 rightFrame = tk.Frame(window, bg=_orange, width=400)
@@ -154,7 +154,6 @@ for i in range(len(buttons)):
 shapeFrame = tk.Frame(rightFrame, bg=_orange, width=100)
 shapeFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 shapeOutline = tk.Frame(shapeFrame, bg=_orange, height=300, width=90)
-#shapeOutline = tk.Frame(shapeFrame, bg=_blue, height=300, width=90)
 shapeOutline.place(in_=shapeFrame, anchor="c", relx=.5, rely=.5, relwidth=0.95)
 shapeCanvas = tk.Canvas(shapeOutline, width=300, height=300, bg=_orange, highlightthickness=0)
 shapeCanvas.pack()
