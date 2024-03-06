@@ -203,7 +203,7 @@ data = pd.read_csv(fileName)
 edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 
 graph = BayesianNetwork(edges)
-graph.fit(data)
+graph.fit(data, state_names={'shape': [0, 1]})
 shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
 graph.add_cpds(shape_cpd)
 
