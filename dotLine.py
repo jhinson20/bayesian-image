@@ -167,10 +167,22 @@ bottomFrame.grid(row=1, column=0, sticky="nsew")
 probabilityFrame.columnconfigure(0, weight=1)  
 probabilityFrame.rowconfigure(0, weight=1)     
 probabilityFrame.rowconfigure(1, weight=1)
+
 dotProbability = tk.Label(topFrame, text="0%", bg=_blue)
 dotProbability.place(relx=0.5, rely=.1)
+dotCanvasOultine = tk.Frame(topFrame, bg=_blue, height=90, width=90)
+dotCanvasOultine.place(in_=topFrame, anchor="c", relx=.5, rely=.5, relwidth=0.95)
+dotProbabilityCanvas = tk.Canvas(dotCanvasOultine, width=100, height=100, bg=_blue, highlightthickness=0)
+dotProbabilityCanvas.pack()
+dotProbabilityCanvas.create_rectangle(30, 30, 70, 70, fill=_orange)
+
 lineProbability = tk.Label(bottomFrame, text="0%", bg=_blue)
 lineProbability.place(relx=0.5, rely=.1)
+lineCanvasOultine = tk.Frame(bottomFrame, bg=_blue, height=90, width=160)
+lineCanvasOultine.place(in_=bottomFrame, anchor="c", relx=.5, rely=.5, relwidth=0.95)
+lineProbabilityCanvas = tk.Canvas(lineCanvasOultine, width=160, height=100, bg=_blue, highlightthickness=0)
+lineProbabilityCanvas.pack()
+lineProbabilityCanvas.create_rectangle(0, 30, 160, 70, fill=_orange)
 
 #Creates file object
 fileName = 'data/dotLine.csv'
