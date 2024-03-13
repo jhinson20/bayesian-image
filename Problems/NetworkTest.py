@@ -19,9 +19,13 @@ else:
     print('dn exist')
 
 numberNodes = 4
+sampleSize = 1000
+seed = 84
 
 newData = data
+sample = data.sample(n=sampleSize, random_state=seed, replace=True)
 
+'''
 #Add random rows from file to the data object, simulating user input
 #Changes randomly every time program is ran
 for i in range(100):
@@ -78,3 +82,5 @@ for index, row in data.iterrows():
 numberRows = data.shape[0]
 
 print("Accuracy is {0:.2f}%.".format((sumCorrect/numberRows)*100))
+
+'''
