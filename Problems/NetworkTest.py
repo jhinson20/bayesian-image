@@ -25,6 +25,14 @@ seed = 84
 
 data = dataFile.sample(n=sampleSize, random_state=seed, replace=True)
 
+train, test = train_test_split(data, test_size=.2, random_state=seed)
+
+print(train)
+
+print("\n\n\n")
+
+print(test)
+
 '''
 #Add random rows from file to the data object, simulating user input
 #Changes randomly every time program is ran
