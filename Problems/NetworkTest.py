@@ -8,6 +8,13 @@ from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete.CPD import TabularCPD
 from pgmpy.estimators import BayesianEstimator
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+
+#Set meta variable values
+
+numberNodes = 4
+sampleSize = 1000
+seed = 84
 
 #Creates file object
 fileName = 'data/dotLine.csv'
@@ -19,19 +26,22 @@ if os.path.isfile(fileName):
 else:
     print('dn exist')
 
-numberNodes = 4
-sampleSize = 1000
-seed = 84
+#Select and split data
 
 data = dataFile.sample(n=sampleSize, random_state=seed, replace=True)
 
 train, test = train_test_split(data, test_size=.2, random_state=seed)
 
-print(train)
+#Creates the bayesian network
+edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 
-print("\n\n\n")
+graph = BayesianNetwork(edges)
+graph.fit(train, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]}, 
+          estimator=BayesianEstimator, prior_type='BDeu', complete_samples_only=False)
+#shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
+#graph.add_cpds(shape_cpd)
 
-print(test)
+infer = VariableElimination(graph)
 
 '''
 #Add random rows from file to the data object, simulating user input
