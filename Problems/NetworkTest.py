@@ -7,13 +7,14 @@ from pgmpy.models import BayesianNetwork
 from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete.CPD import TabularCPD
 from pgmpy.estimators import BayesianEstimator
+from sklearn.model_selection import train_test_split
 
 #Creates file object
-dataFile = 'data/dotLine.csv'
+fileName = 'data/dotLine.csv'
 
-data = pd.read_csv(dataFile)
+dataFile = pd.read_csv(fileName)
 
-if os.path.isfile(dataFile):
+if os.path.isfile(fileName):
     print('exists')
 else:
     print('dn exist')
@@ -22,8 +23,7 @@ numberNodes = 4
 sampleSize = 1000
 seed = 84
 
-newData = data
-sample = data.sample(n=sampleSize, random_state=seed, replace=True)
+data = dataFile.sample(n=sampleSize, random_state=seed, replace=True)
 
 '''
 #Add random rows from file to the data object, simulating user input
