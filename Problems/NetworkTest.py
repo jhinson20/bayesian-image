@@ -6,6 +6,7 @@ import os
 from pgmpy.models import BayesianNetwork
 from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete.CPD import TabularCPD
+from pgmpy.estimators import BayesianEstimator
 
 #Creates file object
 dataFile = 'data/dotLine.csv'
@@ -45,7 +46,8 @@ for i in range(100):
 edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 
 graph = BayesianNetwork(edges)
-graph.fit(newData, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]})
+graph.fit(newData, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]}, 
+          estimator=BayesianEstimator, prior_type='BDeu', complete_samples_only=False)
 #shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
 #graph.add_cpds(shape_cpd)
 
