@@ -10,26 +10,26 @@ from pgmpy.estimators import BayesianEstimator
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
-#Set meta variable values
+#Set global variable values
 
 numberNodes = 4
 sampleSize = 1000
+numberOfRuns = 5
 seed = 84
+_confusion = [[0, 0], [0, 0]]
 
 #Creates file object
 fileName = 'data/dotLine.csv'
 
 dataFile = pd.read_csv(fileName)
 
-if os.path.isfile(fileName):
-    print('exists')
-else:
-    print('dn exist')
+if not os.path.isfile(fileName):
+    print('file dn exist')
 
-#Select and split data
-
+#Randomly select data
 data = dataFile.sample(n=sampleSize, random_state=seed, replace=True)
 
+#Split data
 train, test = train_test_split(data, test_size=.2, random_state=seed)
 
 #Creates the bayesian network
@@ -38,10 +38,58 @@ edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 graph = BayesianNetwork(edges)
 graph.fit(train, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]}, 
           estimator=BayesianEstimator, prior_type='BDeu', complete_samples_only=False)
+
+#Makes the shape estimation uniform
 #shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
 #graph.add_cpds(shape_cpd)
 
 infer = VariableElimination(graph)
+
+#Arrays that will contain the actual and predicted values of each of the rows from the test set
+pred_test = []
+actu_test = []
+
+#Evaluating test data
+
+for index, row in test.iterrows():
+    pred_shape = row['shape']
+
+    nodeNames = list("x" + str(i) for i in range(numberNodes))
+
+    #Creating a dictionary with all of the node values
+    evidenceDict = {}
+
+    for i in range(numberNodes):
+        evidenceDict[nodeNames[i]] = row[nodeNames[i]]
+
+    #Getting the prediction based on the given evidence dictionary
+    pred_shape = str(infer.map_query(variables = ["shape"], evidence= evidenceDict))
+    pred_shape = int(pred_shape[pred_shape.find(':') + 1 : pred_shape.rfind('}')].strip())
+
+    #Appending the prediction to the list
+    pred_test.append(pred_shape)
+
+    #Build query string for the actual value of the shape
+    query_string = ""
+
+    for key, value in evidenceDict.items():
+        query_string += key + " == " + str(value) + " and "
+
+    query_string = query_string[:query_string.rfind("and")-1]
+
+    #Getting the actual value of the shape given the same activated nodes from the original data set
+    actual_row = dataFile.query(query_string).iloc[0]
+
+    #Appending the actual value to the list
+    actu_test.append(int(actual_row['shape']))
+
+matrix = confusion_matrix(actu_test, pred_test)
+
+for i in range(len(matrix)):
+    for j in range(len(matrix[i])):
+        _confusion[i][j] += matrix[i][j] 
+
+print(_confusion)
 
 '''
 #Add random rows from file to the data object, simulating user input
