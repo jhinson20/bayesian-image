@@ -91,6 +91,23 @@ for i in range(len(matrix)):
 
 print(_confusion)
 
+tn = _confusion[0][0]
+fp = _confusion[0][1]
+fn = _confusion[1][0]
+tp = _confusion[1][1]
+
+accuracy = (tp+tn)/(tp+tn+fp+fn)
+sensitivity = tp/(tp+fn)
+specificity = tn/(tn+fn)
+
+#Calculations are made with 0 being the value of a dot and 1 being the value of a line
+#This means that a false negative is the network predicting a dot when the actual is a line, as dots are negative (0) and lines are positive (1)
+print("-"*30)
+print("Accuracy is {0:.2f}%.".format(accuracy * 100))
+print("Sensitivity is {0:.2f}%.".format(sensitivity * 100))
+print("Specificity is {0:.2f}%.".format(specificity * 100))
+print("-"*30)
+
 '''
 #Add random rows from file to the data object, simulating user input
 #Changes randomly every time program is ran
