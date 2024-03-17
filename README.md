@@ -11,4 +11,4 @@
 - ~~From sklearn import train_test split~~
 - ~~Predict with BN and test data~~
 - ~~Evaluate(test, BN)~~
-- For loop the entire thing and keep track of acc, spec, sensitivity
+- ~~For loop the entire thing and keep track of acc, spec, sensitivity~~
