@@ -18,7 +18,11 @@ numberNodes = 4
 sampleSize = 1000
 numberSplits = 5
 seed = 84
+uniformShape = False
 _confusion = [[0, 0], [0, 0]]
+_accuracy = []
+_sensitivity = []
+_specificity = []
 
 #Creates file object
 fileName = 'data/dotLine.csv'
@@ -31,13 +35,13 @@ if not os.path.isfile(fileName):
 #Randomly select data
 data = dataFile.sample(n=sampleSize, random_state=seed, replace=True)
 
-#Create the folds for the data
-kf = KFold(n_splits=numberSplits, shuffle=False)
-
 #Creates the bayesian network
 edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
 
 graph = BayesianNetwork(edges)
+
+#Create the folds for the data
+kf = KFold(n_splits=numberSplits, shuffle=False)
 
 for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
 
@@ -49,9 +53,10 @@ for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
     graph.fit(train, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]}, 
             estimator=BayesianEstimator, prior_type='BDeu', complete_samples_only=False)
 
-    #Makes the shape estimation uniform
-    #shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
-    #graph.add_cpds(shape_cpd)
+    #Makes the shape estimation uniform if uniformShape is true
+    if(uniformShape):
+        shape_cpd = TabularCPD('shape', 2, [[0.5],[0.5]])
+        graph.add_cpds(shape_cpd)
 
     infer = VariableElimination(graph)
 
@@ -73,7 +78,7 @@ for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
             evidenceDict[nodeNames[i]] = row[nodeNames[i]]
 
         #Getting the prediction based on the given evidence dictionary
-        pred_shape = str(infer.map_query(variables = ["shape"], evidence= evidenceDict))
+        pred_shape = str(infer.map_query(variables = ["shape"], evidence= evidenceDict, show_progress=False))
         pred_shape = int(pred_shape[pred_shape.find(':') + 1 : pred_shape.rfind('}')].strip())
 
         #Appending the prediction to the list
@@ -95,24 +100,24 @@ for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
 
     matrix = confusion_matrix(actu_test, pred_test)
 
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            _confusion[i][j] += matrix[i][j] 
+    # for i in range(len(matrix)):
+    #     for j in range(len(matrix[i])):
+    #         _confusion[i][j] += matrix[i][j] 
 
-tn = _confusion[0][0]
-fp = _confusion[0][1]
-fn = _confusion[1][0]
-tp = _confusion[1][1]
+    tn = matrix[0][0]
+    fp = matrix[0][1]
+    fn = matrix[1][0]
+    tp = matrix[1][1]
 
-accuracy = (tp+tn)/(tp+tn+fp+fn)
-sensitivity = tp/(tp+fn)
-specificity = tn/(tn+fn)
+    _accuracy.append((tp+tn)/(tp+tn+fp+fn))
+    _sensitivity.append(tp/(tp+fn))
+    _specificity.append(tn/(tn+fn))
 
 #Calculations are made with 0 being the value of a dot and 1 being the value of a line
 #This means that a false negative is the network predicting a dot when the actual is a line, as dots are negative (0) and lines are positive (1)
-print("-"*30)
-print("Confusion Matrix: " + str(_confusion))
-print("Accuracy is {0:.2f}%.".format(accuracy * 100))
-print("Sensitivity is {0:.2f}%.".format(sensitivity * 100))
-print("Specificity is {0:.2f}%.".format(specificity * 100))
-print("-"*30)
+print("-"*50)
+#print("Confusion Matrix: " + str(_confusion))
+print("Accuracy is {0:.2f}%.".format((sum(_accuracy)/len(_accuracy)) * 100))
+print("Sensitivity is {0:.2f}%.".format((sum(_sensitivity)/len(_sensitivity)) * 100))
+print("Specificity is {0:.2f}%.".format((sum(_specificity)/len(_specificity)) * 100))
+print("-"*50)
