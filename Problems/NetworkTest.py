@@ -31,11 +31,6 @@ if not os.path.isfile(fileName):
 #Randomly select data
 data = dataFile.sample(n=sampleSize, random_state=seed, replace=True)
 
-#Creates the bayesian network
-edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
-
-graph = BayesianNetwork(edges)
-
 #Create the folds for the data
 kf = KFold(n_splits=numberSplits, shuffle=False)
 
@@ -44,6 +39,11 @@ for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
     #Select training and test data based on the indicies of the fold
     train = data.iloc[train_index]
     test = data.iloc[test_index]
+
+    #Creates the bayesian network
+    edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
+
+    graph = BayesianNetwork(edges)
 
     #Fit data to network
     graph.fit(train, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]}, 
@@ -108,7 +108,7 @@ for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
 
     _accuracy.append((tp+tn)/(tp+tn+fp+fn))
     _sensitivity.append(tp/(tp+fn))
-    _specificity.append(tn/(tn+fn))
+    _specificity.append(tn/(tn+fp))
 
 #Calculations are made with 0 being the value of a dot and 1 being the value of a line
 #This means that a false negative is the network predicting a dot when the actual is a line, as dots are negative (0) and lines are positive (1)
