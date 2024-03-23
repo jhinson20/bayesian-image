@@ -4,7 +4,7 @@
 
 ### March 27
 
-- Get the network test to work with the original data file
+- ~~Get the network test to work with the original data file~~
 - Simulate triangles and squares in 10X10
 - Scale up network test code for the 10X10 with results
 
