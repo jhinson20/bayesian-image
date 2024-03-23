@@ -6,7 +6,6 @@ from pgmpy.factors.discrete.CPD import TabularCPD
 from pgmpy.estimators import BayesianEstimator
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import KFold
-import numpy as np
 
 #Set global variable values
 
