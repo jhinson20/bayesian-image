@@ -21,6 +21,17 @@ smallSquare[0] = 1
 smallSquare[1] = 1
 smallSquare[_numRowCol] = 1
 smallSquare[_numRowCol + 1] = 1
+_startingSquares = []
+
+for i in range(2, _numRowCol + 1):
+    square = list(grid0)
+    for j in range(i):
+        square[j] = 1
+        square[j + 10 * i - 10] = 1
+        square[j * 10] = 1
+        square[j * 10 + i - 1] = 1
+        
+    _startingSquares.append(square)
 
 #Creates a dataframe with specified columns
 
