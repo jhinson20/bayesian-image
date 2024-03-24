@@ -14,31 +14,30 @@ fileName = 'data/squareTriangle.csv'
 if os.path.isfile(fileName):
     os.remove(fileName)
 
-#Creates a 1d array representing a 2x2 square in the bottom left corner of the grid
+#Creates a 1d array representing a 2x2 square in the top left corner of the grid
 smallSquare = list(grid0)
-smallSquare[_numRowCol * (_numRowCol - 1)] = 1
-smallSquare[_numRowCol * (_numRowCol - 1) + 1] = 1
-smallSquare[_numRowCol * (_numRowCol - 2)] = 1
-smallSquare[_numRowCol * (_numRowCol - 2) + 1] = 1
+smallSquare[0] = 1
+smallSquare[1] = 1
+smallSquare[_numRowCol] = 1
+smallSquare[_numRowCol + 1] = 1
 
 #Adds the shape to the file
-nodes = []
+# nodes = []
 
-for val in smallSquare:
-    nodes.append(val)
+# for val in smallSquare:
+#     nodes.append(val)
 
 square = {
     'shape': [0]
 }
 
-dataFrame = pd.DataFrame(square)
+_dataFrame = pd.DataFrame(square)
+# _dataFrame = pd.DataFrame()
 
-nodeNames = list("x" + str(i) for i in range(_numRowCol**2))
+_nodeNames = list("x" + str(i) for i in range(_numRowCol**2))
 
-for i in range(_numRowCol**2):
-    dataFrame[nodeNames[i]] = [nodes[i]]
-
-dataFrame.to_csv(fileName, index=False, header=True, mode='a')
+# for i in range(_numRowCol**2):
+#     _dataFrame[_nodeNames[i]] = [nodes[i]]
 
 #Represents the lowest rightmost pixel on the shape
 _x = [_numRowCol - 1, 1]
@@ -50,30 +49,71 @@ _y = [_numRowCol - 2, 0]
 
 def shiftRight(grid):
     enable = False
+    outOfBounds = False
 
-    for i in range(_numRowCol):
-        for j in range(_numRowCol):
-            if grid[i][j] == 1:
-                if not enable:
-                    grid[i][j] = 0
-                enable = True
-            else:
-                if enable:
-                    grid[i][j] = 1
-                enable = False
+    for i in range(len(grid)):
+        if grid[i] == 1:
+            if not enable:
+                grid[i] = 0
+            enable = True
+        else:
+            if enable:
+                grid[i] = 1
+                if (i + 1) % _numRowCol == 1:
+                    outOfBounds = True
+            enable = False
     
-    return grid
+    return grid, outOfBounds
+
+def shiftDown(grid):
+    enableList = []
+    hitBounds = False
+    outOfBounds = False
+
+    for i in range(len(grid)):
+        if grid[i] == 1:
+            if i not in enableList:
+                grid[i] = 0
+            enableList.append(i+10)
+        else:
+            if i in enableList:
+                grid[i] = 1
+                if _numRowCol*(_numRowCol-1) <= i <= (_numRowCol**2) - 1:
+                    hitBounds = True
+                elif i > (_numRowCol**2) - 1:
+                    outOfBounds = True
+                enableList.remove(i)
+    
+    return grid, hitBounds, outOfBounds
 
 
 #Loops that move the shape around the grid
 
 grid = list(smallSquare)
 
-for i in range(_numRowCol):
-    grid = shiftRight(grid)
 
-    if i == 8:
-        print(grid)
+for i in range(_numRowCol):
+
+    _dataFrame['shape'] = 0
+
+    for i in range(_numRowCol**2):
+        _dataFrame[_nodeNames[i]] = [grid[i]]
+
+    if os.path.isfile(fileName):
+        _dataFrame.to_csv(fileName, index=False, header=False, mode='a')
+    else:
+        _dataFrame.to_csv(fileName, index=False, header=True, mode='a')
+
+    grid, outOfBounds = shiftRight(grid)
+    
+    if(outOfBounds):
+        break
+
+# for i in range(_numRowCol):
+#     grid = shiftRight(grid)
+
+#     if i == 8:
+#         print(grid)
 
 #while(_x < _numRowCol and _y < _numRowCol):
 
