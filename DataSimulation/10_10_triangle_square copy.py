@@ -1,4 +1,5 @@
 # This file creates a dataset in a csv file in the /data folder that defines many squares and triangles
+#All shapes are outlined and not filled
 
 import os
 import pandas as pd
@@ -24,7 +25,6 @@ smallSquare[_numRowCol + 1] = 1
 #Creates a dataframe with specified columns
 
 _nodeNames = list("x" + str(i) for i in range(_numRowCol**2))
-print(['shape'] + _nodeNames)
 _dataFrame = pd.DataFrame(columns=['shape'] + _nodeNames)
 
 #Represents the lowest rightmost pixel on the shape
@@ -47,7 +47,7 @@ def shiftRight(grid):
         else:
             if enable:
                 grid[i] = 1
-                if (i + 1) % _numRowCol == 1:
+                if i % _numRowCol == 0:
                     outOfBounds = True
             enable = False
     
@@ -55,7 +55,7 @@ def shiftRight(grid):
 
 def shiftDown(grid):
     enableList = []
-    hitBounds = False
+    # hitBounds = False
     outOfBounds = False
 
     for i in range(len(grid)):
@@ -66,47 +66,57 @@ def shiftDown(grid):
         else:
             if i in enableList:
                 grid[i] = 1
-                if _numRowCol*(_numRowCol-1) <= i <= (_numRowCol**2) - 1:
-                    hitBounds = True
-                elif i > (_numRowCol**2) - 1:
+                # if _numRowCol*(_numRowCol-1) <= i <= (_numRowCol**2) - 1:
+                    # hitBounds = True
+                # elif i > (_numRowCol**2) - 1:
+                if i > (_numRowCol**2) - 1:
                     outOfBounds = True
                 enableList.remove(i)
     
-    return grid, hitBounds, outOfBounds
+    # return grid, hitBounds, outOfBounds
+    return grid, outOfBounds
 
 
 #Loops that move the shape around the grid
 
 grid = list(smallSquare)
-
+_active = grid.count(1)
 
 for i in range(_numRowCol):
+    beforeRightShift = list(grid)
+    for j in range(_numRowCol):
 
-    square = {'shape': 0}
+        square = {'shape': 0}
 
-    for i in range(_numRowCol**2):
-        square[_nodeNames[i]] = grid[i]
+        for j in range(_numRowCol**2):
+            square[_nodeNames[j]] = grid[j]
 
-    _dataFrame.loc[len(_dataFrame)] = square
-    grid, outOfBounds = shiftRight(grid)
-    
-    if(outOfBounds):
+        _dataFrame.loc[len(_dataFrame)] = square
+        grid, outOfBounds = shiftRight(grid)
+        
+        if(outOfBounds):
+            break
+    grid, outOfBounds = shiftDown(beforeRightShift)
+
+    if outOfBounds or _active != grid.count(1):
         break
+
+# for j in range(_numRowCol):
+
+#     square = {'shape': 0}
+
+#     for j in range(_numRowCol**2):
+#         square[_nodeNames[j]] = grid[j]
+
+#     _dataFrame.loc[len(_dataFrame)] = square
+#     grid, outOfBounds = shiftRight(grid)
+    
+#     if(outOfBounds):
+#         break
+
+    
 
 if os.path.isfile(fileName):
     _dataFrame.to_csv(fileName, index=False, header=False, mode='a')
 else:
     _dataFrame.to_csv(fileName, index=False, header=True, mode='a')
-    
-# for i in range(_numRowCol):
-#     grid = shiftRight(grid)
-
-#     if i == 8:
-#         print(grid)
-
-#while(_x < _numRowCol and _y < _numRowCol):
-
-# for i in range(_numRowCol):
-#     for j in range(_numRowCol):
-        
-#         if(grid[])
