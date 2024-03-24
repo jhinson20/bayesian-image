@@ -308,6 +308,28 @@ for square in _startingSquares:
         if outOfBounds or _active != grid.count(1):
             break
 
+for triangle in _startingTriangles:
+    grid = list(triangle)
+    _active = grid.count(1)
+    for i in range(_numRowCol):
+        beforeRightShift = list(grid)
+        for j in range(_numRowCol):
+
+            triangle = {'shape': 1}
+
+            for j in range(_numRowCol**2):
+                triangle[_nodeNames[j]] = grid[j]
+
+            _dataFrame.loc[len(_dataFrame)] = triangle
+            grid, outOfBounds = shiftRight(grid)
+            
+            if(outOfBounds):
+                break
+        grid, outOfBounds = shiftDown(beforeRightShift)
+
+        if outOfBounds or _active != grid.count(1):
+            break
+
 if os.path.isfile(fileName):
     _dataFrame.to_csv(fileName, index=False, header=False, mode='a')
 else:
