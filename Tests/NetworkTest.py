@@ -9,18 +9,18 @@ from sklearn.model_selection import KFold
 
 #Set global variable values
 
-numberNodes = 4
+numberNodes = 100
 sampleSize = 1000
 numberSplits = 5
 seed = 84
-uniformShape = False
+uniformShape = True
 _accuracy = []
 _sensitivity = []
 _specificity = []
 # _confusion = [[0, 0], [0, 0]]
 
 #Creates file object
-fileName = 'data/dotLine.csv'
+fileName = 'data/squareTriangle.csv'
 
 dataFile = pd.read_csv(fileName)
 
@@ -40,13 +40,18 @@ for foldNum, (train_index, test_index) in enumerate(kf.split(data), 1):
     test = data.iloc[test_index]
 
     #Creates the bayesian network
-    edges = [('shape', 'x0'), ('shape', 'x1'), ('shape', 'x2'), ('shape', 'x3')]
+    edges = []
+    stateNames = {'shape': [0,1]}
+    
+    for i in range(numberNodes):
+        node = 'x' + str(i)
+        edges.append(('shape', node))
+        stateNames[node] = [0,1]
 
     graph = BayesianNetwork(edges)
 
     #Fit data to network
-    graph.fit(train, state_names={'shape': [0, 1], 'x0': [0, 1], 'x1': [0, 1], 'x2': [0, 1], 'x3': [0, 1]}, 
-            estimator=BayesianEstimator, prior_type='BDeu', complete_samples_only=False)
+    graph.fit(train, state_names=stateNames, estimator=BayesianEstimator, prior_type='BDeu', complete_samples_only=False)
 
     #Makes the shape estimation uniform if uniformShape is true
     if(uniformShape):
