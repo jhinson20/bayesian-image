@@ -21,23 +21,11 @@ smallSquare[1] = 1
 smallSquare[_numRowCol] = 1
 smallSquare[_numRowCol + 1] = 1
 
-#Adds the shape to the file
-# nodes = []
-
-# for val in smallSquare:
-#     nodes.append(val)
-
-square = {
-    'shape': [0]
-}
-
-_dataFrame = pd.DataFrame(square)
-# _dataFrame = pd.DataFrame()
+#Creates a dataframe with specified columns
 
 _nodeNames = list("x" + str(i) for i in range(_numRowCol**2))
-
-# for i in range(_numRowCol**2):
-#     _dataFrame[_nodeNames[i]] = [nodes[i]]
+print(['shape'] + _nodeNames)
+_dataFrame = pd.DataFrame(columns=['shape'] + _nodeNames)
 
 #Represents the lowest rightmost pixel on the shape
 _x = [_numRowCol - 1, 1]
@@ -94,21 +82,22 @@ grid = list(smallSquare)
 
 for i in range(_numRowCol):
 
-    _dataFrame['shape'] = 0
+    square = {'shape': 0}
 
     for i in range(_numRowCol**2):
-        _dataFrame[_nodeNames[i]] = [grid[i]]
+        square[_nodeNames[i]] = grid[i]
 
-    if os.path.isfile(fileName):
-        _dataFrame.to_csv(fileName, index=False, header=False, mode='a')
-    else:
-        _dataFrame.to_csv(fileName, index=False, header=True, mode='a')
-
+    _dataFrame.loc[len(_dataFrame)] = square
     grid, outOfBounds = shiftRight(grid)
     
     if(outOfBounds):
         break
 
+if os.path.isfile(fileName):
+    _dataFrame.to_csv(fileName, index=False, header=False, mode='a')
+else:
+    _dataFrame.to_csv(fileName, index=False, header=True, mode='a')
+    
 # for i in range(_numRowCol):
 #     grid = shiftRight(grid)
 
