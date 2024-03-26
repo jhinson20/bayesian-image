@@ -1,3 +1,5 @@
+#Network test that works specifically on the dot line case with the 10 rows from the data file
+
 import pandas as pd
 import os
 from pgmpy.models import BayesianNetwork
